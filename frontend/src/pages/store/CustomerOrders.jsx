@@ -7,21 +7,25 @@ import {
   ORDER_TYPE_LABELS,
   PAYMENT_LABELS,
   STATUS_LABELS,
+  statusFlowFor,
 } from "../../lib";
 import { getGuestOrderIds } from "./orderStore.js";
 import iconLogo from "../../assets/yumi_icon.png";
 import PixView from "../../components/PixView.jsx";
 import CustomerAuthModal from "./CustomerAuthModal.jsx";
 
-const FLOW_DELIVERY = ["pending", "confirmed", "preparing", "ready", "delivering", "completed"];
-const FLOW_OTHER = ["pending", "confirmed", "preparing", "ready", "completed"];
 const ACTIVE = (s) => !["completed", "cancelled"].includes(s);
 
 function StatusTracker({ order }) {
   if (order.status === "cancelled") {
     return <div className="badge red" style={{ marginTop: 8 }}>Pedido cancelado</div>;
   }
-  const flow = order.order_type === "delivery" ? FLOW_DELIVERY : FLOW_OTHER;
+  let flow = statusFlowFor(order.order_type);
+  // be defensive: if the order somehow has a status outside this type's flow
+  // (e.g. legacy data), insert it before "completed" so the tracker still works
+  if (!flow.includes(order.status)) {
+    flow = [...flow.slice(0, -1), order.status, "completed"];
+  }
   const current = flow.indexOf(order.status);
   return (
     <div className="tracker">

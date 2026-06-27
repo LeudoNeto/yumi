@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import api, { apiError } from "../../api";
 import {
   formatBRL,
+  nextStatusFor,
   ORDER_TYPE_LABELS,
   PAYMENT_LABELS,
-  STATUS_FLOW,
   STATUS_LABELS,
 } from "../../lib";
 import Modal from "../../components/Modal.jsx";
@@ -46,11 +46,6 @@ export default function Orders() {
     if (detail?.id === order.id) setDetail(data);
   }
 
-  function nextStatus(status) {
-    const i = STATUS_FLOW.indexOf(status);
-    return i >= 0 && i < STATUS_FLOW.length - 1 ? STATUS_FLOW[i + 1] : null;
-  }
-
   if (!orders) return <div className="spinner" />;
 
   const filtered = orders.filter((o) => {
@@ -83,7 +78,7 @@ export default function Orders() {
 
       <div className="orders-grid">
         {filtered.map((o) => {
-          const next = nextStatus(o.status);
+          const next = nextStatusFor(o.order_type, o.status);
           return (
             <div key={o.id} className="card pad order-card">
               <div className="between">

@@ -47,6 +47,20 @@ export const STATUS_FLOW = [
   "completed",
 ];
 
+// The progress flow depends on the fulfillment type: only delivery orders pass
+// through "delivering" (you don't "deliver" a pickup / dine-in order).
+export function statusFlowFor(orderType) {
+  return orderType === "delivery"
+    ? ["pending", "confirmed", "preparing", "ready", "delivering", "completed"]
+    : ["pending", "confirmed", "preparing", "ready", "completed"];
+}
+
+export function nextStatusFor(orderType, status) {
+  const flow = statusFlowFor(orderType);
+  const i = flow.indexOf(status);
+  return i >= 0 && i < flow.length - 1 ? flow[i + 1] : null;
+}
+
 // resolve uploaded image paths (served by the backend under /uploads)
 export function mediaUrl(path) {
   if (!path) return null;

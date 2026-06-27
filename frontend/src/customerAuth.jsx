@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { shopApi, CUSTOMER_TOKEN_KEY } from "./api";
+import { clearGuestOrders } from "./pages/store/orderStore.js";
 
 const CustomerAuthContext = createContext(null);
 
@@ -43,6 +44,7 @@ export function CustomerAuthProvider({ children }) {
 
   function logout() {
     localStorage.removeItem(CUSTOMER_TOKEN_KEY);
+    clearGuestOrders(); // this device forgets the previous session's tracked orders
     setCustomer(null);
   }
 

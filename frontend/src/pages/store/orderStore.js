@@ -21,3 +21,15 @@ export function getGuestOrderIds(slug) {
     return [];
   }
 }
+
+// Drop all device-tracked order ids — called on logout so this device stops
+// surfacing orders from a previous session/account.
+export function clearGuestOrders() {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith("yumi_orders_"))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch {
+    /* ignore storage errors */
+  }
+}

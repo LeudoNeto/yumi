@@ -97,13 +97,15 @@ export default function CustomerOrders() {
         data.forEach((o) => byId.set(o.id, o));
       } catch { /* ignore */ }
     }
-    // guest orders placed from this device
+    // guest orders placed from this device — only surface truly anonymous ones
+    // (customer_id == null). Account-linked orders come from the API above, so a
+    // different account logged in on this device never sees someone else's orders.
     const guestIds = getGuestOrderIds(empresaUrl).filter((id) => !byId.has(id));
     await Promise.all(
       guestIds.map(async (id) => {
         try {
           const { data } = await shopApi.get(`/public/${empresaUrl}/orders/${id}`);
-          byId.set(data.id, data);
+          if (data.customer_id == null) byId.set(data.id, data);
         } catch { /* order may have been removed */ }
       })
     );

@@ -1,0 +1,140 @@
+erDiagram
+    Company ||--o{ User : "users"
+    Company ||--o{ BusinessHour : "hours"
+    Company ||--o{ Category : "categories"
+    Company ||--o{ Order : "orders"
+    Customer |o--o{ Order : "orders (SET NULL)"
+    Category ||--o{ MenuItem : "items"
+    MenuItem ||--o{ OptionGroup : "option_groups"
+    OptionGroup ||--o{ Option : "options"
+    Order ||--o{ OrderItem : "items"
+    MenuItem |o--o{ OrderItem : "menu_item (SET NULL)"
+
+    Company {
+        int id PK
+        string name
+        string empresa_url UK "slug público da loja"
+        text description
+        string logo_url "nullable"
+        string cover_url "nullable"
+        string phone
+        string whatsapp
+        string address_street
+        string address_number
+        string address_complement
+        string address_neighborhood
+        string address_city
+        string address_state
+        string address_zip
+        bool delivery_enabled
+        bool pickup_enabled
+        bool dine_in_enabled
+        float delivery_fee
+        float min_order_value
+        string estimated_time
+        bool pix_enabled
+        bool cash_enabled
+        string pix_key
+        string pix_merchant_name
+        string pix_merchant_city
+        datetime created_at
+    }
+
+    User {
+        int id PK
+        int company_id FK
+        string name
+        string email UK
+        string hashed_password
+        datetime created_at
+    }
+
+    Customer {
+        int id PK
+        string name
+        string email UK
+        string phone
+        string hashed_password
+        datetime created_at
+    }
+
+    BusinessHour {
+        int id PK
+        int company_id FK
+        int weekday "0=Seg ... 6=Dom"
+        bool is_closed
+        string open_time "HH:MM"
+        string close_time "HH:MM"
+    }
+
+    Category {
+        int id PK
+        int company_id FK
+        string name
+        text description
+        int sort_order
+    }
+
+    MenuItem {
+        int id PK
+        int category_id FK
+        string name
+        text description
+        float base_price
+        string image_url "nullable"
+        bool is_available
+        int sort_order
+    }
+
+    OptionGroup {
+        int id PK
+        int item_id FK
+        string name
+        int min_select
+        int max_select
+        bool allow_repeat
+        int sort_order
+    }
+
+    Option {
+        int id PK
+        int group_id FK
+        string name
+        float price_delta
+        int sort_order
+    }
+
+    Order {
+        int id PK
+        int company_id FK
+        int customer_id FK "nullable, SET NULL"
+        string customer_name
+        string customer_phone
+        string order_type "delivery|pickup|dine_in"
+        string payment_method "pix|cash"
+        string address_street
+        string address_number
+        string address_complement
+        string address_neighborhood
+        string address_reference
+        string table_number
+        text notes
+        float change_for
+        float subtotal
+        float delivery_fee
+        float total
+        text pix_payload "nullable"
+        string status "pending..cancelled"
+        datetime created_at
+    }
+
+    OrderItem {
+        int id PK
+        int order_id FK
+        int menu_item_id FK "nullable, SET NULL"
+        string name
+        int quantity
+        float unit_price
+        float total_price
+        text options_summary "snapshot JSON"
+    }

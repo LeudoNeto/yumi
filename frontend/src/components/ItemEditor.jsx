@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import Modal from "./Modal.jsx";
 import api, { apiError } from "../api";
 import { formatBRL } from "../lib";
+import { MoneyInput } from "./Inputs.jsx";
 
 function blankGroup() {
   return { name: "", min_select: 0, max_select: 1, allow_repeat: false, options: [blankOption()] };
@@ -136,9 +137,9 @@ export default function ItemEditor({ categoryId, item, onClose, onSaved }) {
           <div className="grow">
             <div className="field"><label>Nome do item</label>
               <input value={form.name} onChange={(e) => set("name", e.target.value)} required autoFocus /></div>
-            <div className="field"><label>Preço base (R$)</label>
-              <input type="number" step="0.01" min="0" value={form.base_price}
-                onChange={(e) => set("base_price", e.target.value)} required /></div>
+            <div className="field"><label>Preço base</label>
+              <MoneyInput allowEmpty value={form.base_price}
+                onChange={(v) => set("base_price", v)} placeholder="R$ 0,00" required /></div>
           </div>
         </div>
         <div className="field"><label>Descrição</label>
@@ -179,9 +180,9 @@ export default function ItemEditor({ categoryId, item, onClose, onSaved }) {
                     <input value={o.name} placeholder="Nome da opção"
                       onChange={(e) => updateOption(gi, oi, "name", e.target.value)} />
                     <div className="opt-price">
-                      <span>+R$</span>
-                      <input type="number" step="0.01" value={o.price_delta}
-                        onChange={(e) => updateOption(gi, oi, "price_delta", e.target.value)} />
+                      <span>+</span>
+                      <MoneyInput value={o.price_delta}
+                        onChange={(v) => updateOption(gi, oi, "price_delta", v)} />
                     </div>
                     <button type="button" className="opt-remove" onClick={() => removeOption(gi, oi)}>✕</button>
                   </div>

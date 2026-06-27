@@ -31,7 +31,7 @@ def run():
             empresa_url="yumi-sushi",
             description="Comida japonesa fresquinha, bowls e poke feitos na hora. 🍜",
             phone="(11) 4002-8922",
-            whatsapp="5511940028922",
+            whatsapp="(11) 94002-8922",
             address_street="Rua das Cerejeiras",
             address_number="123",
             address_neighborhood="Liberdade",

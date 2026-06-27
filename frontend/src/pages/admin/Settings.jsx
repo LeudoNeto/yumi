@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import api, { apiError } from "../../api";
 import { WEEKDAYS } from "../../lib";
+import { MoneyInput, PhoneInput } from "../../components/Inputs.jsx";
 
 const EMPTY_HOURS = WEEKDAYS.map((_, i) => ({
   weekday: i,
@@ -139,9 +140,10 @@ export default function Settings() {
         </div>
         <div className="row">
           <div className="field"><label>Telefone</label>
-            <input value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
-          <div className="field"><label>WhatsApp (só números)</label>
-            <input value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5511999998888" /></div>
+            <PhoneInput value={form.phone} onChange={(v) => set("phone", v)} placeholder="(11) 98888-7777" /></div>
+          <div className="field"><label>WhatsApp</label>
+            <PhoneInput value={form.whatsapp} onChange={(v) => set("whatsapp", v)} placeholder="(11) 98888-7777" />
+            <div className="hint">Adicionamos o +55 automaticamente nos links.</div></div>
         </div>
       </section>
 
@@ -201,12 +203,10 @@ export default function Settings() {
             onChange={(e) => set("dine_in_enabled", e.target.checked)} /> 🍴 Consumir no local</label>
         </div>
         <div className="row mt16">
-          <div className="field"><label>Taxa de entrega (R$)</label>
-            <input type="number" step="0.01" min="0" value={form.delivery_fee}
-              onChange={(e) => set("delivery_fee", e.target.value)} /></div>
-          <div className="field"><label>Pedido mínimo (R$)</label>
-            <input type="number" step="0.01" min="0" value={form.min_order_value}
-              onChange={(e) => set("min_order_value", e.target.value)} /></div>
+          <div className="field"><label>Taxa de entrega</label>
+            <MoneyInput value={form.delivery_fee} onChange={(v) => set("delivery_fee", v)} /></div>
+          <div className="field"><label>Pedido mínimo</label>
+            <MoneyInput value={form.min_order_value} onChange={(v) => set("min_order_value", v)} /></div>
           <div className="field"><label>Tempo estimado</label>
             <input value={form.estimated_time} onChange={(e) => set("estimated_time", e.target.value)} placeholder="30-45 min" /></div>
         </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "../../components/Modal.jsx";
 import { apiError } from "../../api";
+import { PhoneInput } from "../../components/Inputs.jsx";
 import { useCustomerAuth } from "../../customerAuth.jsx";
 import iconLogo from "../../assets/yumi_icon.png";
 
@@ -67,7 +68,7 @@ export default function CustomerAuthModal({ onClose, onAuthed, initialMode = "lo
             autoFocus={mode === "login"} /></div>
         {mode === "register" && (
           <div className="field"><label>Telefone / WhatsApp</label>
-            <input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="(11) 99999-9999" /></div>
+            <PhoneInput value={form.phone} onChange={(v) => set("phone", v)} placeholder="(11) 98888-7777" /></div>
         )}
         <div className="field"><label>Senha</label>
           <input type="password" value={form.password} minLength={6}

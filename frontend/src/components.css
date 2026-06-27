@@ -92,7 +92,7 @@
 .opt-row > input { flex: 1; }
 .opt-price { display: flex; align-items: center; gap: 4px; background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 0 8px; }
 .opt-price span { color: var(--muted); font-size: 13px; }
-.opt-price input { width: 80px; border: none; padding: 9px 4px; }
+.opt-price input { width: 110px; border: none; padding: 9px 4px; }
 .opt-price input:focus { box-shadow: none; }
 .opt-remove { background: none; border: none; color: var(--red); cursor: pointer; font-size: 13px; padding: 6px; }
 

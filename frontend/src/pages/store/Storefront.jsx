@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { shopApi } from "../../api";
-import { formatBRL, WEEKDAYS, ORDER_TYPE_LABELS } from "../../lib";
+import { formatBRL, WEEKDAYS, ORDER_TYPE_LABELS, waNumber } from "../../lib";
 import { useCustomerAuth } from "../../customerAuth.jsx";
 import iconLogo from "../../assets/yumi_icon.png";
 import ProductModal from "./ProductModal.jsx";
@@ -176,7 +176,7 @@ export default function Storefront() {
               {(company.phone || company.whatsapp) && (
                 <p className="muted">
                   {company.phone && <>📞 {company.phone}<br /></>}
-                  {company.whatsapp && <a href={`https://wa.me/${company.whatsapp}`} target="_blank" rel="noreferrer">💬 WhatsApp</a>}
+                  {company.whatsapp && <a href={`https://wa.me/${waNumber(company.whatsapp)}`} target="_blank" rel="noreferrer">💬 WhatsApp</a>}
                 </p>
               )}
             </section>

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { shopApi, apiError } from "../../api";
-import { formatBRL, ORDER_TYPE_LABELS } from "../../lib";
+import { formatBRL, ORDER_TYPE_LABELS, waNumber } from "../../lib";
 import { useCustomerAuth } from "../../customerAuth.jsx";
 import { rememberGuestOrder } from "./orderStore.js";
 import PixView from "../../components/PixView.jsx";
+import { MoneyInput, PhoneInput } from "../../components/Inputs.jsx";
 import CustomerAuthModal from "./CustomerAuthModal.jsx";
 
 export default function Checkout({ company, cart, setCart, onClose, onTrackOrders }) {
@@ -151,7 +152,7 @@ export default function Checkout({ company, cart, setCart, onClose, onTrackOrder
           {company.whatsapp && (
             <a
               className="btn ghost block mt16"
-              href={`https://wa.me/${company.whatsapp}?text=${encodeURIComponent(
+              href={`https://wa.me/${waNumber(company.whatsapp)}?text=${encodeURIComponent(
                 `Olá! Acabei de fazer o pedido #${placedOrder.id} (${formatBRL(placedOrder.total)}).`
               )}`}
               target="_blank" rel="noreferrer"
@@ -261,7 +262,7 @@ export default function Checkout({ company, cart, setCart, onClose, onTrackOrder
           <div className="field"><label>Nome</label>
             <input value={form.customer_name} onChange={(e) => set("customer_name", e.target.value)} required /></div>
           <div className="field"><label>Telefone</label>
-            <input value={form.customer_phone} onChange={(e) => set("customer_phone", e.target.value)} required /></div>
+            <PhoneInput value={form.customer_phone} onChange={(v) => set("customer_phone", v)} placeholder="(11) 98888-7777" required /></div>
         </div>
 
         {orderType === "delivery" && (
@@ -299,7 +300,7 @@ export default function Checkout({ company, cart, setCart, onClose, onTrackOrder
         </div>
         {payment === "cash" && (
           <div className="field mt8"><label>Precisa de troco para quanto? (opcional)</label>
-            <input type="number" step="0.01" value={form.change_for} onChange={(e) => set("change_for", e.target.value)}
+            <MoneyInput allowEmpty value={form.change_for} onChange={(v) => set("change_for", v)}
               placeholder="Deixe vazio se não precisar" /></div>
         )}
         {payment === "pix" && (

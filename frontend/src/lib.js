@@ -61,6 +61,29 @@ export function nextStatusFor(orderType, status) {
   return i >= 0 && i < flow.length - 1 ? flow[i + 1] : null;
 }
 
+// ---------- phone helpers ----------
+export function onlyDigits(value) {
+  return (String(value ?? "").match(/\d/g) || []).join("");
+}
+
+// format as a Brazilian phone: (99) 98888-7777 (mobile) or (99) 8888-7777 (landline)
+export function formatPhone(value) {
+  const d = onlyDigits(value).slice(0, 11);
+  if (!d) return "";
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+
+// digits with the Brazilian country code, for building wa.me links
+export function waNumber(phone) {
+  let d = onlyDigits(phone);
+  if (!d) return "";
+  if (d.length <= 11) d = "55" + d;
+  return d;
+}
+
 // resolve uploaded image paths (served by the backend under /uploads)
 export function mediaUrl(path) {
   if (!path) return null;

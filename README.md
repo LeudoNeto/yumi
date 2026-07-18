@@ -8,7 +8,7 @@ ou **consumo no local** — pagando com **PIX** ou **na entrega**.
 - **Front-end:** React + Vite + React Router
 - **Back-end:** FastAPI (Python)
 - **Banco de dados:** MySQL 8
-- **Infra:** backend + banco rodam via **Docker Compose**
+- **Infra:** front-end, backend e banco rodam via **Docker Compose**
 
 ---
 
@@ -42,9 +42,9 @@ ou **consumo no local** — pagando com **PIX** ou **na entrega**.
 
 ### Pré-requisitos
 - Docker + Docker Compose
-- Node.js 18+ (para o front-end)
+- Node.js 18+ (opcional — só para o modo de desenvolvimento do front-end)
 
-### 1) Subir backend + banco (Docker Compose)
+### 1) Subir tudo (Docker Compose)
 
 Na raiz do projeto:
 
@@ -55,6 +55,10 @@ docker compose up -d --build
 Isso sobe:
 - **MySQL** em `localhost:3306` (banco `yumi`, usuário `yumi` / senha `yumipass`)
 - **API FastAPI** em `http://localhost:8000` (docs em `http://localhost:8000/docs`)
+- **Front-end** (build do Vite servido por **nginx alpine**) em **http://localhost:5173**
+
+O nginx serve o `dist/` do front e faz proxy de `/api` e `/uploads` para o backend —
+como tudo fica na mesma origem, não há CORS envolvido.
 
 O backend espera o MySQL ficar saudável e cria as tabelas automaticamente no start.
 
@@ -71,7 +75,11 @@ Cria uma loja demo:
 - **Loja pública:** http://localhost:5173/yumi-sushi
 - **Login admin:** `admin@yumi.com` / `yumi1234`
 
-### 3) Rodar o front-end
+### 3) (Opcional) Front-end em modo de desenvolvimento
+
+O container `frontend` já entrega o front pronto. Para hot-reload durante o
+desenvolvimento, rode o Vite localmente — de preferência com o container `frontend`
+parado (`docker compose stop frontend`) para não disputar a porta 5173:
 
 ```bash
 cd frontend
@@ -103,7 +111,7 @@ backend, então não há configuração extra de CORS para o dev.
 
 ```
 yumi/
-├── docker-compose.yml        # MySQL + backend
+├── docker-compose.yml        # MySQL + backend + frontend (nginx)
 ├── .env.example              # variáveis do compose
 ├── backend/
 │   ├── Dockerfile
@@ -120,7 +128,9 @@ yumi/
 │       ├── deps.py           # dependência de usuário autenticado
 │       └── routers/          # auth, company, menu, public, orders
 └── frontend/
-    ├── vite.config.js        # proxy /api e /uploads -> :8000
+    ├── Dockerfile            # build do Vite + nginx alpine (produção)
+    ├── nginx.conf            # SPA + proxy /api e /uploads -> backend:8000
+    ├── vite.config.js        # proxy /api e /uploads -> :8000 (dev)
     └── src/
         ├── api.js, auth.jsx, lib.js
         ├── pages/            # Home, Login, Register, admin/*, store/*
@@ -158,6 +168,10 @@ Para produção real, integre a confirmação de pagamento a um provedor PIX.
 ## ⚠️ Notas de produção
 
 - Defina um `SECRET_KEY` forte e troque as senhas do MySQL no `.env`.
-- Faça o build do front (`npm run build`) e sirva o `dist/` atrás de um proxy
-  reverso, ajustando `CORS_ORIGINS` no backend.
+- O front já vai para produção como build estático servido pelo **nginx** (serviço
+  `frontend`), que também faz proxy de `/api` e `/uploads` para o backend. Como front
+  e API ficam na mesma origem, o `CORS_ORIGINS` do backend só é necessário para o
+  modo de desenvolvimento (Vite).
+- Coloque o serviço `frontend` atrás de um proxy reverso com TLS (HTTPS) e ajuste
+  `FRONTEND_PORT` / `PUBLIC_BASE_URL` conforme o domínio.
 - Os uploads ficam em um volume Docker (`backend_uploads`).

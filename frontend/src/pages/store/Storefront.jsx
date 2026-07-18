@@ -22,6 +22,9 @@ export default function Storefront() {
   const [authModal, setAuthModal] = useState(false);
   const [acctOpen, setAcctOpen] = useState(false);
   const catRefs = useRef({});
+  // Só fecha o drawer quando o clique COMEÇA no backdrop (não ao soltar fora
+  // após selecionar texto num input do checkout).
+  const pressedOnDrawerBackdrop = useRef(false);
 
   useEffect(() => {
     shopApi
@@ -228,8 +231,16 @@ export default function Storefront() {
       )}
 
       {checkoutOpen && (
-        <div className="drawer-backdrop" onClick={() => setCheckoutOpen(false)}>
-          <div className="drawer" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="drawer-backdrop"
+          onMouseDown={(e) => {
+            pressedOnDrawerBackdrop.current = e.target === e.currentTarget;
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && pressedOnDrawerBackdrop.current) setCheckoutOpen(false);
+          }}
+        >
+          <div className="drawer">
             <Checkout
               company={company}
               cart={cart}

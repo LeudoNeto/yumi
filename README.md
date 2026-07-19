@@ -92,6 +92,73 @@ backend, então não há configuração extra de CORS para o dev.
 
 ---
 
+## 🧪 Testes Automatizados
+
+A aplicação possui dois tipos de testes: testes ponta a ponta (E2E) para a interface/fluxos completos e testes unitários/integração para o backend.
+
+---
+
+### 1. Testes Unitários e de Integração (Backend)
+Estes testes validam a lógica interna do backend (PIX, segurança, utilitários, schemas) e todos os endpoints da API de forma isolada, utilizando um banco SQLite em memória.
+
+#### 🚀 Execução via Docker (Recomendado)
+Com os contêineres do projeto ativos (`docker compose up -d`), execute o comando na raiz do projeto:
+```bash
+docker compose exec backend env PYTHONPATH=. pytest tests/ -v
+```
+
+#### ⚙️ Execução Local (Sem Docker)
+1. Acesse a pasta do backend e instale as dependências:
+   ```bash
+   cd backend
+   pip install -r requirements.txt -r requirements-test.txt
+   ```
+2. Defina a variável `PYTHONPATH` e execute os testes:
+   * **No Windows (PowerShell)**:
+     ```powershell
+     $env:PYTHONPATH="."
+     pytest tests/ -v
+     ```
+   * **No Linux / macOS**:
+     ```bash
+     export PYTHONPATH=.
+     pytest tests/ -v
+     ```
+
+Para detalhes adicionais e descrição dos testes unitários, consulte o [`backend/tests/README.md`](backend/tests/README.md).
+
+---
+
+### 2. Testes Ponta a Ponta (E2E)
+Testes E2E com **pytest** e **Playwright** para garantir o funcionamento correto dos fluxos principais da aplicação na interface gráfica.
+
+#### 📋 Pré-requisitos
+1. Python 3.8 ou superior instalado localmente.
+2. A aplicação Yumi deve estar rodando (`docker compose up -d`).
+
+#### ⚙️ Instalação das dependências
+```bash
+# 1. Instalar pacotes python
+pip install -r tests/requirements-test.txt
+
+# 2. Instalar os navegadores do Playwright
+python -m playwright install chromium
+```
+
+#### 🚀 Execução
+Para rodar os testes E2E com o navegador em background:
+```bash
+pytest tests/
+```
+
+* **Ver a execução no navegador (modo headed)**: `pytest tests/ --headed`
+* **Rodar os testes em uma URL diferente**: `pytest tests/ --base-url http://meusite.com`
+* **Atrasar a execução de cada ação**: `pytest tests/ --headed --slowmo 1000`
+
+Consulte também o [`tests/README.md`](tests/README.md) para mais detalhes sobre os testes E2E.
+
+---
+
 ## 🗺️ Rotas principais (front-end)
 
 | Rota | Descrição |
@@ -113,10 +180,15 @@ backend, então não há configuração extra de CORS para o dev.
 yumi/
 ├── docker-compose.yml        # MySQL + backend + frontend (nginx)
 ├── .env.example              # variáveis do compose
+├── pytest.ini                # config do pytest (isola os testes E2E/evita colisões)
 ├── backend/
 │   ├── Dockerfile
+│   ├── pytest.ini            # config do pytest para isolar testes unitários
 │   ├── requirements.txt
 │   ├── seed.py               # dados de demonstração
+│   ├── tests/
+│   │   ├── README.md         # guia e descrição dos testes unitários
+│   │   └── ...
 │   └── app/
 │       ├── main.py           # FastAPI app (CORS, static, routers, lifespan)
 │       ├── config.py         # settings (pydantic-settings)
@@ -136,6 +208,7 @@ yumi/
         ├── pages/            # Home, Login, Register, admin/*, store/*
         └── components/       # Modal, ItemEditor, ProductModal, PixView
 ```
+
 
 ---
 
@@ -175,3 +248,5 @@ Para produção real, integre a confirmação de pagamento a um provedor PIX.
 - Coloque o serviço `frontend` atrás de um proxy reverso com TLS (HTTPS) e ajuste
   `FRONTEND_PORT` / `PUBLIC_BASE_URL` conforme o domínio.
 - Os uploads ficam em um volume Docker (`backend_uploads`).
+
+
